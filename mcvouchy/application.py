@@ -1,7 +1,7 @@
 import argparse
 import logging
-from mcvouchy.config import singleton as config_singleton
-
+from .bot import create_bot
+from .config import singleton as config_singleton
 
 logger = logging.getLogger("mcvouchy.application")
 
@@ -24,7 +24,7 @@ class Application:
             "--config",
             default=None,
             required=False,
-            help="Configuration file to load - defaults " + "to conf/mcvouchy.ini",
+            help="Configuration file to load - defaults to conf/mcvouchy.ini",
         )
 
     def run(self):
@@ -35,3 +35,7 @@ class Application:
 
         if args.config:
             config_singleton.force_load_file(args.config)
+
+        config = config_singleton.get_config()
+
+        create_bot(config)

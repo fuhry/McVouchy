@@ -35,20 +35,14 @@ class ManagedLogger:
     def load_config(self, config: configparser.RawConfigParser) -> None:
         self.cli_handler.setLevel(self.parse_level(config["logging"]["cli_level"]))
 
-        cli_formatter = logging.Formatter(
-            config["logging"]["cli_format"], datefmt=config["logging"]["date_format"]
-        )
+        cli_formatter = logging.Formatter(config["logging"]["cli_format"], datefmt=config["logging"]["date_format"])
         self.cli_handler.setFormatter(cli_formatter)
 
-        self.syslog_handler.setLevel(
-            self.parse_level(config["logging"]["syslog_level"])
-        )
+        self.syslog_handler.setLevel(self.parse_level(config["logging"]["syslog_level"]))
 
         try:
             self.file_handler = logging.FileHandler(config["logging"]["file_target"])
-            self.file_handler.setLevel(
-                self.parse_level(config["logging"]["file_level"])
-            )
+            self.file_handler.setLevel(self.parse_level(config["logging"]["file_level"]))
             self.file_handler.setFormatter(cli_formatter)
             logging.getLogger().addHandler(self.file_handler)
         except KeyError:
@@ -64,12 +58,13 @@ class Config:
         "logging": {
             "date_format": "%Y-%m-%d %H:%M:%S %z",
             "cli_target": "stdout",
-            "cli_level": "warning",
+            "cli_level": "debug",
             "cli_format": "[%(asctime)s] [%(levelname) 7s] [%(name)  21s] %(message)s",
             "file_level": "info",
             "syslog_level": "warn",
         },
         "mcvouchy": {
+            "secret_token": "",
             "airlock_channel": "#welcome",
             "limits_window": "1d",
             "limits_exempt_roles": "Moderator",
@@ -123,10 +118,7 @@ class Config:
 
             return path
         except (PermissionError, FileNotFoundError) as e:
-            logger.debug(
-                "Unable to open config: %s: %s: %s"
-                % (path, e.__class__.__name__, repr(e))
-            )
+            logger.debug("Unable to open config: %s: %s: %s" % (path, e.__class__.__name__, repr(e)))
 
         return None
 
